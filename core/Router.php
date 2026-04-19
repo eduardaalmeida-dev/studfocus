@@ -2,29 +2,37 @@
 
 class Router
 {
-    private $routes = [];
+    private array $routes = [];
 
-    public function get($uri, $action)
+    public function get(string $path, string $controller, string $method): void
     {
-        $this->routes['GET'][$uri] = $action;
+        $this->routes[] = ['GET', $path, $controller, $method];
     }
 
-    public function dispatch($uri)
+    public function post(string $path, string $controller, string $method): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
+        $this->routes[] = ['POST', $path, $controller, $method];
+    }
 
-        if(isset($this->routes[$method][$uri]))
-        {
-            $action = $this->routes[$method][$uri];
+    public function dispatch(string $uri, string $httpMethod): void
+    {
+        $uri = strtok($uri, '?');
+        $uri = rtrim($uri, '/') ?: '/';
 
-            $controller = $action[0];
-            $method = $action[1];
+        foreach ($this->routes as [$method, $path, $controller, $action]) {
+            $pattern = preg_replace('/\{[a-z]+\}/', '([^/]+)', $path);
+            $pattern = "#^{$pattern}$#";
 
-            $controller = new $controller();
-
-            return $controller->$method();
+            if ($httpMethod === $method && preg_match($pattern, $uri, $matches)) {
+                array_shift($matches);
+                require_once __DIR__ . "/../app/controllers/{$controller}.php";
+                $ctrl = new $controller();
+                call_user_func_array([$ctrl, $action], $matches);
+                return;
+            }
         }
 
-        echo "404 - Página não encontrada";
+        http_response_code(404);
+        require __DIR__ . '/../app/views/layouts/404.php';
     }
 }

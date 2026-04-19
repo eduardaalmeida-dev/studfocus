@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudyFocus — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2DC572; --green-d:#22a05e; --green-l:#e8f9f0;
+  --sidebar:#ffffff; --sidebar-w:220px;
+  --body:#f4f6f9; --border:#e8eaed;
+  --text:#1a1d23; --muted:#6b7280; --white:#ffffff;
+  --r:10px; --tr:.18s ease;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--body);color:var(--text);font-size:14px;line-height:1.6;height:100vh;overflow:hidden}
+
+/* ── LAYOUT ────────────────────────────────── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ───────────────────────────────── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;background:var(--white);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;
+}
+.s-logo{display:flex;align-items:center;gap:10px;padding:22px 20px 18px;border-bottom:1px solid var(--border);cursor:pointer}
+.s-logo .ico{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.s-logo span{font-weight:700;font-size:15px}
+.s-nav{flex:1;padding:12px;overflow-y:auto}
+.nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:12px 8px 6px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--muted);cursor:pointer;font-weight:500;font-size:13.5px;transition:all var(--tr);margin-bottom:2px;text-decoration:none}
+.nav-link i{font-size:15px;width:18px;text-align:center}
+.nav-link:hover{background:var(--green-l);color:var(--green-d)}
+.nav-link.active{background:var(--green-l);color:var(--green);font-weight:600}
+.s-user{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.u-info{flex:1;min-width:0}
+.u-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-plan{font-size:11px;color:var(--green);font-weight:500}
+.logout{color:var(--muted);font-size:14px;cursor:pointer;transition:color var(--tr)}
+.logout:hover{color:#e53e3e}
+
+/* ── MAIN AREA ─────────────────────────────── */
+.main{flex:1;display:flex;overflow:hidden}
+
+/* ── PAGE SCREENS ──────────────────────────── */
+.screen{display:none;width:100%;height:100%}
+.screen.visible{display:flex}
+
+/* ── NOTAS SCREEN ──────────────────────────── */
+.notas-wrap{display:grid;grid-template-columns:280px 1fr;width:100%;height:100%;overflow:hidden}
+
+/* ── LIST PANEL ────────────────────────────── */
+.list-panel{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100%;overflow:hidden}
+.list-header{padding:18px 16px 12px;border-bottom:1px solid var(--border)}
+.list-header h5{font-size:15px;font-weight:700;margin-bottom:10px}
+.search-box{position:relative}
+.search-box input{width:100%;background:var(--body);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 34px;font-size:13px;outline:none;transition:border-color var(--tr);font-family:inherit}
+.search-box input:focus{border-color:var(--green)}
+.search-box i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+.chips{padding:10px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--tr);background:var(--body);color:var(--muted)}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.notes-list{flex:1;overflow-y:auto;padding:8px}
+.note-item{padding:12px;border-radius:8px;cursor:pointer;transition:background var(--tr);margin-bottom:2px;border:2px solid transparent}
+.note-item:hover{background:var(--body)}
+.note-item.active{background:var(--green-l);border-color:var(--green)}
+.ni-title{font-weight:600;font-size:13.5px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ni-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px}
+.ni-meta{display:flex;align-items:center;justify-content:space-between}
+.cat-dot{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500}
+.cat-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.note-time{font-size:11px;color:var(--muted)}
+.new-btn{margin:10px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background var(--tr);font-family:inherit;width:calc(100% - 20px)}
+.new-btn:hover{background:var(--green-d)}
+
+/* ── EDITOR PANEL ──────────────────────────── */
+.editor-panel{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--white)}
+.editor-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+.editor-header-left{flex:1;min-width:0}
+.editor-title{font-size:22px;font-weight:700;border:none;outline:none;width:100%;font-family:inherit;color:var(--text);padding:0;background:transparent}
+.editor-meta{display:flex;align-items:center;gap:14px;margin-top:6px;flex-wrap:wrap}
+.cat-tag{font-size:12px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:4px}
+.cat-tag select{border:none;background:none;font-family:inherit;font-size:12px;color:var(--green);font-weight:600;cursor:pointer;outline:none;padding:0}
+.editor-date{font-size:12px;color:var(--muted)}
+.editor-actions{display:flex;gap:8px;align-items:center}
+.btn-save{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background var(--tr);display:flex;align-items:center;gap:6px}
+.btn-save:hover{background:var(--green-d)}
+.btn-del{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--muted);cursor:pointer;transition:all var(--tr)}
+.btn-del:hover{border-color:#e53e3e;color:#e53e3e}
+.toolbar{padding:8px 24px;border-bottom:1px solid var(--border);display:flex;gap:2px;align-items:center;background:var(--body)}
+.tb-btn{width:30px;height:30px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);transition:all var(--tr);font-family:inherit}
+.tb-btn:hover{background:var(--border);color:var(--text)}
+.tb-btn.on{background:var(--green-l);color:var(--green)}
+.tb-sep{width:1px;height:20px;background:var(--border);margin:0 6px}
+.editor-body{flex:1;overflow-y:auto;padding:24px 28px}
+.editor-content{min-height:300px;outline:none;font-size:14.5px;line-height:1.75;color:var(--text)}
+.editor-content h2{font-size:17px;font-weight:700;margin:16px 0 8px}
+.editor-content h3{font-size:15px;font-weight:700;margin:14px 0 6px}
+.editor-content p{margin-bottom:10px}
+.editor-content ul,
+.editor-content ol{padding-left:22px;margin-bottom:10px}
+.editor-content li{margin-bottom:4px}
+.save-status{font-size:11px;color:var(--muted)}
+.save-status.saved{color:var(--green);font-weight:600}
+.save-status.unsaved{color:#f59e0b}
+
+/* ── OTHER SCREENS ─────────────────────────── */
+.page-wrap{padding:28px 32px;overflow-y:auto;width:100%}
+.page-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.page-sub{color:var(--muted);font-size:13.5px;margin-bottom:28px}
+.sf-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.08);padding:20px 22px;margin-bottom:20px}
+.stat-val{font-size:32px;font-weight:700;color:var(--green);line-height:1}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+
+/* ── POMODORO ──────────────────────────────── */
+.timer-wrap{text-align:center;padding:40px 32px}
+.mode-btns{display:flex;gap:8px;justify-content:center;margin-bottom:36px;flex-wrap:wrap}
+.mode-btn{border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;font-family:inherit;transition:all var(--tr)}
+.mode-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.timer-ring{position:relative;width:220px;height:220px;margin:0 auto 10px}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.timer-display{font-size:60px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;letter-spacing:-2px;line-height:1}
+.timer-label{font-size:13px;color:var(--muted);margin-top:4px}
+.timer-subject{width:280px;margin:16px auto}
+.timer-subject input{width:100%;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;text-align:center;transition:border-color var(--tr)}
+.timer-subject input:focus{border-color:var(--green)}
+.timer-controls{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.ctrl-btn{border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all var(--tr)}
+.ctrl-btn.primary{background:var(--green);color:#fff}
+.ctrl-btn.primary:hover{background:var(--green-d)}
+.ctrl-btn.outline{background:#fff;border:1.5px solid var(--border);color:var(--text)}
+.ctrl-btn.outline:hover{border-color:var(--green)}
+.ctrl-btn:disabled{opacity:.4;cursor:default}
+
+/* ── AUTH SCREEN ───────────────────────────── */
+.auth-wrap{min-height:100vh;width:100%;background:linear-gradient(135deg,#f0fdf4,#dcfce7 50%,#bbf7d0);display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:#fff;border-radius:16px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.1)}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.auth-logo .ico{width:38px;height:38px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.auth-logo span{font-size:18px;font-weight:700}
+.auth-card h2{font-size:22px;font-weight:700;margin-bottom:6px}
+.auth-card .sub{color:var(--muted);font-size:13.5px;margin-bottom:24px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.form-group input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border-color var(--tr)}
+.form-group input:focus{border-color:var(--green)}
+.btn-full{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background var(--tr);margin-top:6px}
+.btn-full:hover{background:var(--green-d)}
+.auth-link{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.auth-link a{color:var(--green);font-weight:600;cursor:pointer}
+.demo-hint{text-align:center;margin-top:10px;font-size:12px;color:#bbb}
+
+/* ── MODAL ─────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--tr)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:14px;padding:28px;width:90%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.15);transform:scale(.95) translateY(10px);transition:transform var(--tr)}
+.modal-overlay.open .modal{transform:scale(1) translateY(0)}
+.modal h5{font-size:16px;font-weight:700;margin-bottom:18px}
+.modal label{font-size:13px;font-weight:600;display:block;margin-bottom:5px}
+.modal input,.modal select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color var(--tr)}
+.modal input:focus,.modal select:focus{border-color:var(--green)}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.btn-cancel{background:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted)}
+
+/* ── ALERT ─────────────────────────────────── */
+.alert{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.alert.success{background:#d1fae5;color:#065f46}
+.alert.info{background:#dbeafe;color:#1e40af}
+
+/* ── QUICK LINKS ───────────────────────────── */
+.quick-links{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.quick-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:box-shadow var(--tr)}
+.quick-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.qc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* ── RELATORIOS CHART ──────────────────────── */
+.chart-bars{display:flex;align-items:flex-end;gap:10px;height:160px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;transition:height .4s ease;min-height:0}
+.chart-labels{display:flex;gap:10px;margin-top:8px}
+.chart-lbl{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+
+/* ── SCROLLBAR ─────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#c1c5cc}
+
+/* ── TOAST ─────────────────────────────────── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(20px);opacity:0;transition:all .3s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.green{background:var(--green)}
+
+/* ── BADGE ─────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     AUTH SCREEN (Login)
+════════════════════════════════════════════ -->
+<div id="authScreen" class="auth-wrap" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="ico"><i class="bi bi-mortarboard-fill"></i></div>
+      <span>StudyFocus</span>
+    </div>
+    <h2>Entrar na conta</h2>
+    <p class="sub">Bem-vindo(a) de volta! Informe seus dados.</p>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" value="ana@studyfocus.com" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" value="password" placeholder="••••••••">
+    </div>
+    <button class="btn-full" onclick="doLogin()">Entrar</button>
+    <div class="auth-link">Não tem conta? <a onclick="showRegister()">Criar conta grátis</a></div>
+    <div class="demo-hint">Demo: <strong>ana@studyfocus.com</strong> / <strong>password</strong></div>
+  </div>
+</div>
+
+<!-- Register Screen -->
+<div id="registerScreen" class="auth-wrap" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="ico"><i class="bi bi-mortarboard-fill"></i></div>
+      <span>StudyFocus</span>
+    </div>
+    <h2>Criar conta</h2>
+    <p class="sub">Comece a organizar seus estudos hoje.</p>
+    <div class="form-group"><label>Nome completo</label><input type="text" placeholder="Seu nome"></div>
+    <div class="form-group"><label>E-mail</label><input type="email" placeholder="seu@email.com"></div>
+    <div class="form-group"><label>Senha</label><input type="password" placeholder="Mínimo 6 caracteres"></div>
+    <div class="form-group"><label>Confirmar senha</label><input type="password" placeholder="Repita a senha"></div>
+    <button class="btn-full" onclick="doLogin()">Criar conta</button>
+    <div class="auth-link">Já tem conta? <a onclick="showLogin()">Entrar</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════════ -->
+<div id="appWrap" class="app" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="s-logo" onclick="navigate('home')">
+      <div class="ico"><i class="bi bi-mortarboard-fill"></i></div>
+      <span>StudyFocus</span>
+    </div>
+    <nav class="s-nav">
+      <div class="nav-label">Menu</div>
+      <div class="nav-link" id="nav-home"       onclick="navigate('home')">      <i class="bi bi-grid-1x2"></i>       Painel</div>
+      <div class="nav-link" id="nav-cronometro" onclick="navigate('cronometro')"><i class="bi bi-clock"></i>           Cronômetro</div>
+      <div class="nav-link" id="nav-relatorios" onclick="navigate('relatorios')"><i class="bi bi-bar-chart-line"></i>  Relatórios</div>
+      <div class="nav-link active" id="nav-notas" onclick="navigate('notas')">  <i class="bi bi-journal-text"></i>    Anotações</div>
+      <div class="nav-link" id="nav-arquivos"   onclick="navigate('arquivos')">  <i class="bi bi-folder2-open"></i>    Arquivos</div>
+    </nav>
+    <div class="s-user">
+      <div class="avatar">AS</div>
+      <div class="u-info">
+        <div class="u-name">Ana Silva</div>
+        <div class="u-plan">Estudante Pro</div>
+      </div>
+      <i class="bi bi-box-arrow-right logout" onclick="doLogout()" title="Sair"></i>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- ── NOTAS SCREEN ─────────────────────── -->
+    <div id="screen-notas" class="screen visible">
+      <div class="notas-wrap">
+
+        <!-- List Panel -->
+        <div class="list-panel">
+          <div class="list-header">
+            <h5>Minhas Anotações</h5>
+            <div class="search-box">
+              <i class="bi bi-search"></i>
+              <input type="text" id="searchInput" placeholder="Buscar registros..." oninput="filterNotes(this.value)">
+            </div>
+          </div>
+          <div class="chips" id="chipsWrap">
+            <div class="chip active" onclick="filterByCategory(null, this)">Tudo</div>
+            <div class="chip" onclick="filterByCategory('Historia', this)" style="">História</div>
+            <div class="chip" onclick="filterByCategory('Matematica', this)">Matemática</div>
+            <div class="chip" onclick="filterByCategory('Ingles', this)">Inglês</div>
+          </div>
+          <div class="notes-list" id="notesList"></div>
+          <button class="new-btn" onclick="openModal()">
+            <i class="bi bi-plus-lg"></i> Nova Nota
+          </button>
+        </div>
+
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+          <div class="editor-header">
+            <div class="editor-header-left">
+              <input class="editor-title" id="editorTitle" type="text"
+                     placeholder="Título da anotação..." oninput="markDirty()">
+              <div class="editor-meta">
+                <div class="cat-tag">
+                  <i class="bi bi-circle-fill" style="font-size:8px"></i>
+                  <select id="editorCategory" onchange="markDirty()">
+                    <option value="">Sem categoria</option>
+                    <option value="Historia">História</option>
+                    <option value="Matematica">Matemática</option>
+                    <option value="Ingles">Inglês</option>
+                    <option value="Ciencias">Ciências</option>
+                  </select>
+                </div>
+                <span class="editor-date" id="editorDate">
+                  <i class="bi bi-clock" style="font-size:11px"></i> Última edição hoje às 14h30
+                </span>
+                <span class="save-status" id="saveStatus"></span>
+              </div>
+            </div>
+            <div class="editor-actions">
+              <button class="btn-save" onclick="saveNote()">
+                <i class="bi bi-floppy"></i> Salvar
+              </button>
+              <button class="btn-del" onclick="deleteNote()" title="Excluir">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <button class="tb-btn" onclick="cmd('bold')"        title="Negrito (Ctrl+B)"><strong>B</strong></button>
+            <button class="tb-btn" onclick="cmd('italic')"      title="Itálico (Ctrl+I)"><em>I</em></button>
+            <button class="tb-btn" onclick="cmd('underline')"   title="Sublinhado (Ctrl+U)"><u>U</u></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="cmd('justifyLeft')"   title="Esquerda"><i class="bi bi-text-left"></i></button>
+            <button class="tb-btn" onclick="cmd('justifyCenter')" title="Centro"><i class="bi bi-text-center"></i></button>
+            <button class="tb-btn" onclick="cmd('justifyRight')"  title="Direita"><i class="bi bi-text-right"></i></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="cmd('insertUnorderedList')" title="Lista"><i class="bi bi-list-ul"></i></button>
+            <button class="tb-btn" onclick="cmd('insertOrderedList')"   title="Numerada"><i class="bi bi-list-ol"></i></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="cmdVal('formatBlock','h2')" title="Título H2"><i class="bi bi-type-h2"></i></button>
+            <button class="tb-btn" onclick="cmdVal('formatBlock','h3')" title="Título H3"><i class="bi bi-type-h3"></i></button>
+            <button class="tb-btn" onclick="cmd('removeFormat')" title="Limpar"><i class="bi bi-eraser"></i></button>
+          </div>
+
+          <!-- Editor Body -->
+          <div class="editor-body">
+            <div class="editor-content" id="editorContent" contenteditable="true"
+                 oninput="markDirty()" spellcheck="true"></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /notas -->
+
+    <!-- ── HOME SCREEN ──────────────────────── -->
+    <div id="screen-home" class="screen">
+      <div class="page-wrap">
+        <div class="page-title">Olá, Ana! 👋</div>
+        <div class="page-sub">Aqui está um resumo da sua semana de estudos.</div>
+
+        <div class="stats-row">
+          <div class="sf-card">
+            <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Anotações</div>
+            <div class="stat-val">4</div>
+            <div class="stat-lbl">total criadas</div>
+          </div>
+          <div class="sf-card">
+            <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Tempo esta semana</div>
+            <div class="stat-val">2.5h</div>
+            <div class="stat-lbl">150 minutos de foco</div>
+          </div>
+          <div class="sf-card">
+            <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Categorias</div>
+            <div class="stat-val">5</div>
+            <div class="stat-lbl">matérias cadastradas</div>
+          </div>
+        </div>
+
+        <div class="sf-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div style="font-size:14px;font-weight:700">Anotações Recentes</div>
+            <span onclick="navigate('notas')" style="font-size:13px;color:var(--green);cursor:pointer;font-weight:600">Ver todas →</span>
+          </div>
+          <div id="recentList"></div>
+        </div>
+
+        <div class="quick-links">
+          <div class="quick-card" onclick="navigate('cronometro')">
+            <div class="qc-icon" style="background:var(--green-l);color:var(--green)"><i class="bi bi-clock"></i></div>
+            <div><div style="font-weight:700;font-size:14px">Cronômetro</div><div style="font-size:12px;color:var(--muted)">Sessão Pomodoro</div></div>
+          </div>
+          <div class="quick-card" onclick="navigate('relatorios')">
+            <div class="qc-icon" style="background:#eff6ff;color:#3b82f6"><i class="bi bi-bar-chart-line"></i></div>
+            <div><div style="font-weight:700;font-size:14px">Relatórios</div><div style="font-size:12px;color:var(--muted)">Ver progresso</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /home -->
+
+    <!-- ── CRONOMETRO SCREEN ─────────────────── -->
+    <div id="screen-cronometro" class="screen">
+      <div class="page-wrap" style="max-width:680px">
+        <div class="page-title">Cronômetro Pomodoro</div>
+        <div class="page-sub">Mantenha o foco em blocos de tempo estruturados.</div>
+        <div class="sf-card timer-wrap">
+          <div class="mode-btns">
+            <button class="mode-btn active" data-min="25" onclick="setMode(this,25,'Foco')">🎯 Foco (25min)</button>
+            <button class="mode-btn" data-min="5"  onclick="setMode(this,5,'Pausa Curta')">☕ Pausa Curta (5min)</button>
+            <button class="mode-btn" data-min="15" onclick="setMode(this,15,'Pausa Longa')">🌿 Pausa Longa (15min)</button>
+          </div>
+          <div class="timer-ring">
+            <svg width="220" height="220" viewBox="0 0 220 220" style="transform:rotate(-90deg)">
+              <circle cx="110" cy="110" r="90" fill="none" stroke="var(--border)" stroke-width="10"/>
+              <circle id="ring" cx="110" cy="110" r="90" fill="none"
+                stroke="var(--green)" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="565.49" stroke-dashoffset="565.49"
+                style="transition:stroke-dashoffset .5s linear"/>
+            </svg>
+            <div class="timer-inner">
+              <div class="timer-display" id="timerDisp">25:00</div>
+              <div class="timer-label" id="timerLbl">Foco</div>
+            </div>
+          </div>
+          <div class="timer-subject">
+            <input type="text" id="pomSubject" placeholder="Qual matéria você está estudando?">
+          </div>
+          <div class="timer-controls">
+            <button class="ctrl-btn primary" id="btnStart" onclick="timerStart()">▶ Iniciar</button>
+            <button class="ctrl-btn outline" id="btnPause" onclick="timerPause()" disabled>⏸ Pausar</button>
+            <button class="ctrl-btn outline" onclick="timerReset()">↺ Resetar</button>
+          </div>
+        </div>
+        <div class="sf-card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">Sessões de Hoje</div>
+          <div id="sessionList">
+            <p style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Nenhuma sessão registrada hoje. Comece agora!</p>
+          </div>
+        </div>
+      </div>
+    </div><!-- /cronometro -->
+
+    <!-- ── RELATORIOS SCREEN ─────────────────── -->
+    <div id="screen-relatorios" class="screen">
+      <div class="page-wrap">
+        <div class="page-title">Relatórios</div>
+        <div class="page-sub">Acompanhe sua evolução nos estudos.</div>
+        <div class="stats-row">
+          <div class="sf-card">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Esta Semana</div>
+            <div class="stat-val">2.5h</div><div class="stat-lbl">150 minutos de foco</div>
+          </div>
+          <div class="sf-card">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Anotações</div>
+            <div class="stat-val">4</div><div class="stat-lbl">total acumulado</div>
+          </div>
+          <div class="sf-card">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Dias Estudados</div>
+            <div class="stat-val">5</div><div class="stat-lbl">nos últimos 30 dias</div>
+          </div>
+        </div>
+        <div class="sf-card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:20px">Minutos de Estudo — Últimos 7 dias</div>
+          <div class="chart-bars" id="chartBars"></div>
+          <div class="chart-labels" id="chartLabels"></div>
+        </div>
+      </div>
+    </div><!-- /relatorios -->
+
+    <!-- ── ARQUIVOS SCREEN ───────────────────── -->
+    <div id="screen-arquivos" class="screen">
+      <div class="page-wrap">
+        <div class="page-title">Arquivos</div>
+        <div class="page-sub">Gerencie documentos, PDFs e anexos dos seus estudos.</div>
+        <div class="sf-card" style="text-align:center;padding:48px 32px;border:2px dashed var(--border)">
+          <i class="bi bi-cloud-arrow-up" style="font-size:48px;color:var(--muted);opacity:.4;display:block;margin-bottom:16px"></i>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Arraste arquivos aqui</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">PDF, DOCX, imagens, etc. (máx. 10MB)</div>
+          <button class="btn-save" style="margin:0 auto">
+            <i class="bi bi-plus-lg"></i> Selecionar Arquivo
+          </button>
+        </div>
+        <div class="sf-card" style="background:var(--green-l);border-color:var(--green);display:flex;align-items:center;gap:14px">
+          <i class="bi bi-info-circle-fill" style="color:var(--green);font-size:22px;flex-shrink:0"></i>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:var(--green-d)">Funcionalidade em desenvolvimento</div>
+            <div style="font-size:13px;color:var(--green-d);opacity:.85;margin-top:2px">O upload de arquivos estará disponível em breve. Você poderá anexar arquivos diretamente às suas anotações.</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /arquivos -->
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ── MODAL: Nova Nota ──────────────────────── -->
+<div class="modal-overlay" id="newNoteModal">
+  <div class="modal">
+    <h5><i class="bi bi-plus-circle" style="color:var(--green);margin-right:6px"></i>Nova Anotação</h5>
+    <label>Título</label>
+    <input type="text" id="newNoteTitle" placeholder="Ex: Revolução Francesa...">
+    <label>Categoria</label>
+    <select id="newNoteCategory">
+      <option value="">Sem categoria</option>
+      <option value="Historia">História</option>
+      <option value="Matematica">Matemática</option>
+      <option value="Ingles">Inglês</option>
+      <option value="Ciencias">Ciências</option>
+    </select>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="createNote()"><i class="bi bi-plus-lg"></i> Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA STORE
+════════════════════════════════════════════ */
+const CAT_COLORS = {
+  Historia:'#198754', Matematica:'#0d6efd',
+  Ingles:'#6f42c1', Ciencias:'#fd7e14', Ciencias2:'#20c997'
+};
+
+let notes = [
+  { id:1, title:'Revolução Francesa - Resumo', category:'Historia',
+    content:`<h2>1. Antecedentes (Antigo Regime)</h2>
+<p>A sociedade francesa foi dividida em três estados:</p>
+<ul><li>Primeiro Estado: Clero (Igreja)</li>
+<li>Segundo Estado: Nobreza</li>
+<li>Terceiro Estado: Burguesia e Camponeses (97% da população)</li></ul>
+<p>O Terceiro Estado pagava todos os impostos enquanto a nobreza e o clero tinham privilégios e isenções. A crise econômica devido às guerras (Independência dos EUA) e mais colheitas aumentou a fome e a insatisfação.</p>
+<h2>2. A Queda da Bastilha (14 de Julho de 1789)</h2>
+<p>Símbolo do absolutismo real, a prisão da Bastilha foi tomada pela população. Este evento marca o início da Revolução e o fim do poder absoluto do rei.</p>
+<h2>3. Declaração dos Direitos do Homem e do Cidadão</h2>
+<p>Documento inspirado no Iluminismo que definia a justiça jurídica, a liberdade de expressão e o direito à propriedade. "Liberdade, Igualdade, Fraternidade" tornou-se o lema.</p>`,
+    updated:'Hoje às 14h30' },
+  { id:2, title:'Fórmulas de Bhaskara', category:'Matematica',
+    content:`<p>Delta = b² - 4ac. Se delta &gt; 0, há duas raízes reais distintas.</p>
+<h3>Fórmula</h3><p>x = (-b ± √Δ) / 2a</p>
+<ul><li>Δ &gt; 0 → 2 raízes reais distintas</li>
+<li>Δ = 0 → 1 raiz real dupla</li>
+<li>Δ &lt; 0 → Sem raízes reais</li></ul>`,
+    updated:'Ontem' },
+  { id:3, title:'Verbos Irregulares', category:'Ingles',
+    content:`<p>Principais verbos irregulares em inglês:</p>
+<ul><li>Be – Was/Were – Been</li>
+<li>Have – Had – Had</li>
+<li>Go – Went – Gone</li>
+<li>Do – Did – Done</li>
+<li>Make – Made – Made</li></ul>`,
+    updated:'12 Out' },
+  { id:4, title:'Resumo Era Vargas', category:'Historia',
+    content:`<p>Estado Novo, DIP e Leis Trabalhistas marcaram o período getulista.</p>
+<h3>Principais medidas</h3>
+<ul><li>Criação da CLT (1943)</li><li>Industrialização nacional</li><li>Censura via DIP</li></ul>`,
+    updated:'10 de' },
+];
+
+let activeNoteId   = 1;
+let currentFilter  = null;
+let searchQuery    = '';
+let saveTimer      = null;
+let pomSessions    = [];
+
+/* ═══════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════ */
+window.onload = () => {
+  showLogin();
+  renderChart();
+};
+
+/* ═══════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════ */
+function showLogin()    { hide(['authScreen','registerScreen','appWrap']); show('authScreen'); }
+function showRegister() { hide(['authScreen','registerScreen','appWrap']); show('registerScreen'); }
+
+function doLogin() {
+  hide(['authScreen','registerScreen']);
+  show('appWrap');
+  renderNotesList();
+  loadNote(activeNoteId);
+  renderRecent();
+  navigate('notas');
+}
+
+function doLogout() {
+  hide(['appWrap']);
+  show('authScreen');
+  toast('Sessão encerrada.', 2000);
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+function navigate(page) {
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+
+  const navEl    = document.getElementById('nav-' + page);
+  const screenEl = document.getElementById('screen-' + page);
+  if (navEl)    navEl.classList.add('active');
+  if (screenEl) screenEl.classList.add('visible');
+}
+
+/* ═══════════════════════════════════════════
+   NOTES LIST
+════════════════════════════════════════════ */
+function filteredNotes() {
+  return notes.filter(n => {
+    const matchCat = !currentFilter || n.category === currentFilter;
+    const matchQ   = !searchQuery   ||
+      n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      n.content.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCat && matchQ;
+  });
+}
+
+function renderNotesList() {
+  const list = document.getElementById('notesList');
+  const data = filteredNotes();
+
+  if (!data.length) {
+    list.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--muted)">
+      <i class="bi bi-journal" style="font-size:36px;display:block;margin-bottom:10px;opacity:.3"></i>
+      <p style="font-size:13px">Nenhuma anotação encontrada.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(n => {
+    const preview = n.content.replace(/<[^>]+>/g,'').slice(0,80);
+    const color   = CAT_COLORS[n.category] || '#aaa';
+    const active  = n.id === activeNoteId ? 'active' : '';
+    return `<div class="note-item ${active}" onclick="loadNote(${n.id})">
+      <div class="ni-title">${escHtml(n.title)}</div>
+      <div class="ni-preview">${escHtml(preview)}</div>
+      <div class="ni-meta">
+        ${n.category
+          ? `<span class="cat-dot" style="color:${color}">${n.category}</span>`
+          : '<span></span>'}
+        <span class="note-time">${n.updated}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadNote(id) {
+  activeNoteId = id;
+  const note   = notes.find(n => n.id === id);
+  if (!note) return;
+
+  document.getElementById('editorTitle').value   = note.title;
+  document.getElementById('editorCategory').value = note.category || '';
+  document.getElementById('editorContent').innerHTML = note.content;
+  document.getElementById('editorDate').innerHTML =
+    `<i class="bi bi-clock" style="font-size:11px"></i> Última edição ${note.updated}`;
+  document.getElementById('saveStatus').textContent = '';
+  document.getElementById('saveStatus').className   = 'save-status';
+
+  renderNotesList();
+}
+
+function filterNotes(q) {
+  searchQuery = q;
+  renderNotesList();
+}
+
+function filterByCategory(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderNotesList();
+}
+
+/* ═══════════════════════════════════════════
+   EDITOR / SAVE
+════════════════════════════════════════════ */
+function cmd(c)      { document.execCommand(c); }
+function cmdVal(c,v) { document.execCommand(c, false, v); }
+
+function markDirty() {
+  const st = document.getElementById('saveStatus');
+  st.textContent = 'Não salvo';
+  st.className   = 'save-status unsaved';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNote, 2000);
+}
+
+function saveNote() {
+  const note = notes.find(n => n.id === activeNoteId);
+  if (!note) return;
+
+  note.title    = document.getElementById('editorTitle').value;
+  note.category = document.getElementById('editorCategory').value;
+  note.content  = document.getElementById('editorContent').innerHTML;
+  note.updated  = 'Agora';
+
+  const st = document.getElementById('saveStatus');
+  st.textContent = 'Salvo ✓';
+  st.className   = 'save-status saved';
+
+  renderNotesList();
+  toast('Nota salva!', 1800, 'green');
+}
+
+function deleteNote() {
+  if (!confirm('Excluir esta nota?')) return;
+  notes = notes.filter(n => n.id !== activeNoteId);
+  if (notes.length) loadNote(notes[0].id);
+  else {
+    document.getElementById('editorTitle').value = '';
+    document.getElementById('editorContent').innerHTML = '';
+  }
+  renderNotesList();
+  toast('Nota excluída.', 2000);
+}
+
+/* ═══════════════════════════════════════════
+   MODAL
+════════════════════════════════════════════ */
+function openModal()  { document.getElementById('newNoteModal').classList.add('open'); }
+function closeModal() { document.getElementById('newNoteModal').classList.remove('open'); }
+
+function createNote() {
+  const title = document.getElementById('newNoteTitle').value.trim() || 'Nova Nota';
+  const cat   = document.getElementById('newNoteCategory').value;
+  const newId = Date.now();
+  notes.unshift({ id:newId, title, category:cat, content:'<p></p>', updated:'Agora' });
+  closeModal();
+  document.getElementById('newNoteTitle').value = '';
+  renderNotesList();
+  loadNote(newId);
+  toast('Nota criada!', 1800, 'green');
+}
+
+document.getElementById('newNoteModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('newNoteModal')) closeModal();
+});
+
+/* ═══════════════════════════════════════════
+   RECENT NOTES (Home)
+════════════════════════════════════════════ */
+function renderRecent() {
+  const el   = document.getElementById('recentList');
+  const data = notes.slice(0, 5);
+  if (!data.length) { el.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Nenhuma anotação ainda.</p>'; return; }
+  el.innerHTML = data.map(n => {
+    const color = CAT_COLORS[n.category] || '#e5e7eb';
+    return `<div onclick="navigate('notas');loadNote(${n.id})" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer">
+      <div style="width:36px;height:36px;border-radius:8px;background:${color};opacity:.75;flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(n.title)}</div>
+        <div style="font-size:11px;color:var(--muted)">${n.category || 'Sem categoria'}</div>
+      </div>
+      <span style="font-size:11px;color:var(--muted);flex-shrink:0">${n.updated}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   POMODORO TIMER
+════════════════════════════════════════════ */
+let pomTotal = 25*60, pomRemain = 25*60, pomRunning = false, pomInterval = null, pomCompleted = false;
+const CIRC = 2 * Math.PI * 90; // 565.49
+
+function fmt(s) {
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+function setMode(el, min, label) {
+  timerStop();
+  pomTotal = pomRemain = min * 60;
+  pomCompleted = false;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('timerLbl').textContent = label;
+  renderTimer();
+}
+
+function renderTimer() {
+  document.getElementById('timerDisp').textContent = fmt(pomRemain);
+  const pct    = 1 - (pomRemain / pomTotal);
+  const offset = CIRC * (1 - pct);
+  document.getElementById('ring').style.strokeDashoffset = offset;
+}
+
+function timerStart() {
+  if (pomRunning) return;
+  pomRunning = true;
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnPause').disabled = false;
+  pomInterval = setInterval(() => {
+    pomRemain--;
+    renderTimer();
+    if (pomRemain <= 0) {
+      clearInterval(pomInterval);
+      pomRunning   = false;
+      pomCompleted = true;
+      playDone();
+      recordSession();
+    }
+  }, 1000);
+}
+
+function timerPause() {
+  clearInterval(pomInterval);
+  pomRunning = false;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnPause').disabled = true;
+}
+
+function timerStop() {
+  clearInterval(pomInterval);
+  pomRunning = false;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnPause').disabled = true;
+}
+
+function timerReset() {
+  timerStop();
+  pomRemain    = pomTotal;
+  pomCompleted = false;
+  renderTimer();
+}
+
+function recordSession() {
+  const subj = document.getElementById('pomSubject').value || 'Foco';
+  pomSessions.push({ subject: subj, minutes: Math.round(pomTotal/60), completed: true });
+  renderSessions();
+  toast('Sessão concluída! 🎉', 3000, 'green');
+}
+
+function renderSessions() {
+  const el = document.getElementById('sessionList');
+  if (!pomSessions.length) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Nenhuma sessão registrada hoje. Comece agora!</p>';
+    return;
+  }
+  el.innerHTML = pomSessions.slice().reverse().map(s => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:18px">🎯</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${escHtml(s.subject)}</div>
+        <div style="font-size:11px;color:var(--muted)">${s.minutes}min · ✓ Concluída</div>
+      </div>
+    </div>`).join('');
+}
+
+function playDone() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523,659,784].forEach((f,i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = f; o.type = 'sine';
+      g.gain.setValueAtTime(.3, ctx.currentTime + i*.3);
+      g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + i*.3 + .5);
+      o.start(ctx.currentTime + i*.3); o.stop(ctx.currentTime + i*.3 + .5);
+    });
+  } catch(_) {}
+}
+
+/* ═══════════════════════════════════════════
+   CHART (Relatorios)
+════════════════════════════════════════════ */
+function renderChart() {
+  const mockData = [
+    {lbl:'13/04', min:0}, {lbl:'14/04', min:50}, {lbl:'15/04', min:75},
+    {lbl:'16/04', min:25}, {lbl:'17/04', min:120}, {lbl:'18/04', min:90},
+    {lbl:'19/04', min:30},
+  ];
+  const maxVal = Math.max(...mockData.map(d => d.min)) || 60;
+
+  document.getElementById('chartBars').innerHTML = mockData.map(d => {
+    const h = d.min > 0 ? (d.min / maxVal) * 140 : 0;
+    return `<div class="chart-bar-wrap">
+      ${d.min > 0 ? `<span style="font-size:10px;font-weight:600;color:var(--green)">${d.min}m</span>` : ''}
+      <div class="chart-bar" style="height:${Math.max(h, d.min > 0 ? 4 : 0)}px;background:${d.min > 0 ? 'var(--green)' : 'var(--border)'}"></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('chartLabels').innerHTML = mockData.map(d =>
+    `<div class="chart-lbl">${d.lbl}</div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════ */
+function show(id) { document.getElementById(id).style.display = ''; }
+
+function hide(ids) {
+  (Array.isArray(ids) ? ids : [ids]).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, ms = 2500, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => el.classList.remove('show'), ms);
+}
+
+/* ── Keyboard shortcut ─ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    saveNote();
+  }
+});
+</script>
+</body>
+</html>

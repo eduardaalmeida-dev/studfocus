@@ -1,5 +1,22 @@
-/vendor
-/node_modules
+# StudyFocus — .gitignore
+
+# Ambiente
 .env
+
+# Uploads de usuários
+public/storage/
+storage/
+
+# PHP
+*.log
+*.cache
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db

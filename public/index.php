@@ -1,23 +1,18 @@
 <?php
 
-require_once "../core/Router.php";
-
-require_once "../app/controllers/AuthController.php";
-require_once "../app/controllers/HomeController.php";
-require_once "../app/controllers/CronogramaController.php";
-require_once "../app/controllers/RelatorioController.php";
+require_once __DIR__ . '/../core/config.php';
 
 $router = new Router();
+require_once __DIR__ . '/../routes/web.php';
 
-require_once "../routes/web.php";
+$uri        = $_SERVER['REQUEST_URI'];
+$base       = parse_url(BASE_URL, PHP_URL_PATH);
+$uri        = substr($uri, strlen($base)) ?: '/';
+$httpMethod = $_SERVER['REQUEST_METHOD'];
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-$base = '/studfocus/public';
-$uri = str_replace($base, '', $uri);
-
-if($uri == ''){
-    $uri = '/';
+// Allow POST method override via _method field
+if ($httpMethod === 'POST' && isset($_POST['_method'])) {
+    $httpMethod = strtoupper($_POST['_method']);
 }
 
-$router->dispatch($uri);
+$router->dispatch($uri, $httpMethod);

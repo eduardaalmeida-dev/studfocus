@@ -1,144 +1,47 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>StudFocus - Login</title>
+<?php $pageTitle = 'Login — StudyFocus'; ?>
+<?php require __DIR__ . '/../layouts/header.php'; ?>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<div class="sf-auth-wrap">
+  <div class="sf-auth-card">
+    <div class="sf-auth-logo">
+      <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <span>StudyFocus</span>
+    </div>
 
-<style>
+    <h2>Entrar na conta</h2>
+    <p>Bem-vindo(a) de volta! Informe seus dados.</p>
 
-body{
-height:100vh;
-}
+    <?php if (!empty($flash)): ?>
+      <div class="sf-alert <?= $flash['type'] ?>">
+        <i class="bi bi-exclamation-circle"></i>
+        <?= htmlspecialchars($flash['message']) ?>
+      </div>
+    <?php endif; ?>
 
-.login-container{
-height:100vh;
-}
+    <form method="POST" action="<?= BASE_URL ?>/login">
+      <div class="sf-form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email"
+               placeholder="seu@email.com" required autocomplete="email">
+      </div>
 
-.bg-study{
-background:linear-gradient(rgba(0,150,80,0.7),rgba(0,150,80,0.7)),
-url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');
-background-size:cover;
-background-position:center;
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-text-align:center;
-padding:40px;
-}
+      <div class="sf-form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password"
+               placeholder="••••••••" required autocomplete="current-password">
+      </div>
 
-.quote{
-font-size:28px;
-font-weight:600;
-margin-bottom:20px;
-}
+      <button type="submit" class="sf-btn-full">Entrar</button>
+    </form>
 
-.tag{
-background:rgba(255,255,255,0.2);
-padding:6px 14px;
-border-radius:20px;
-margin:5px;
-display:inline-block;
-}
+    <div class="sf-auth-link">
+      Não tem conta? <a href="<?= BASE_URL ?>/register">Criar conta grátis</a>
+    </div>
 
-.logo{
-font-weight:bold;
-color:#1fa55b;
-font-size:22px;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="container-fluid login-container">
-<div class="row h-100">
-
-<!-- LOGIN -->
-
-<div class="col-md-5 d-flex align-items-center justify-content-center">
-
-<div style="width:350px">
-
-<div class="logo mb-4">⚡ StudFocus</div>
-
-<h2 class="fw-bold">Hora de seguir.</h2>
-
-<p class="text-muted mb-4">
-Entre para gerenciar seus ciclos Pomodoro e atingir suas metas hoje.
-</p>
-
-<form>
-
-<div class="mb-3">
-<label class="form-label">Seu e-mail</label>
-<input type="email" class="form-control" placeholder="aluno@studfocus.com">
+    <div class="sf-auth-link" style="margin-top:10px;font-size:12px;color:#aaa;">
+      Demo: <strong>ana@studyfocus.com</strong> / <strong>password</strong>
+    </div>
+  </div>
 </div>
 
-<div class="mb-3">
-<label class="form-label">Sua senha</label>
-<input type="password" class="form-control">
-</div>
-
-<div class="d-flex justify-content-between mb-3">
-
-<div class="form-check">
-<input class="form-check-input" type="checkbox">
-<label class="form-check-label">
-Manter conectado
-</label>
-</div>
-
-<a href="#" class="small">Esqueceu a senha?</a>
-
-</div>
-
-<button class="btn btn-success w-100 mb-3">
-Acessar Plataforma
-</button>
-
-<button class="btn btn-outline-secondary w-100">
-Entrar com Google
-</button>
-
-<p class="text-center mt-3">
-Ainda não tem conta?
-<a href="#" class="text-success fw-bold">Criar conta grátis</a>
-</p>
-
-</form>
-
-</div>
-
-</div>
-
-<!-- IMAGEM -->
-
-<div class="col-md-7 d-none d-md-flex bg-study">
-
-<div>
-
-<div class="quote">
-"O segredo do sucesso é a constância do propósito."
-</div>
-
-<div>
-<span class="tag">Pomodoro</span>
-<span class="tag">Estatísticas</span>
-<span class="tag">Metas</span>
-</div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</body>
-</html>
+<?php require __DIR__ . '/../layouts/footer.php'; ?>
